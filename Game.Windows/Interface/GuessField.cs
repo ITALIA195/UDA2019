@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Game.Windows.Interface
@@ -12,11 +15,14 @@ namespace Game.Windows.Interface
 
         private string _word;
         private bool[] _guessedCharacters;
+        private int _guessLength;
         private int _guessedCount;
-        
+
         private void SetWord(string word)
         {
             _word = word;
+            _guessLength = word.Count(x => x != ' ');
+            _guessedCount = 0;
             _guessedCharacters = new bool[word.Length];
             Invalidate();
         }
@@ -25,10 +31,14 @@ namespace Game.Windows.Interface
         {
             var guesses = InternalGuess(character);
             _guessedCount += guesses;
-            if (_guessedCount >= _word.Length)
-                WordGuessed?.Invoke(this, null);
             Invalidate();
             return guesses > 0;
+        }
+        
+        public void CheckIfGuessed()
+        {
+            if (_guessedCount >= _guessLength)
+                WordGuessed?.Invoke(this, null);
         }
         
         private int InternalGuess(char character)
@@ -36,7 +46,7 @@ namespace Game.Windows.Interface
             int guessedCount = 0;
             for (int i = 0; i < _word.Length; i++)
             {
-                if (Compare(_word[i], character))
+                if (!_guessedCharacters[i] && Compare(_word[i], character))
                 {
                     _guessedCharacters[i] = true;
                     ++guessedCount;

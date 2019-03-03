@@ -95,11 +95,11 @@ namespace Game.Windows.Interface
                     break;
                 case Mode.Streak:
                     _gameMode = new StreakMode();
-                    buttons = new[] { "2", "3", "3" };
+                    buttons = new[] { "2", "3", "4" };
                     break;
                 case Mode.OneEach:
                     _gameMode = new OneEachMode();
-                    buttons = new[] { "2", "3", "3" };
+                    buttons = new[] { "2", "3", "4" };
                     break;
                 case Mode.AgainstTime:
                     _gameMode = new AgainstTimeMode();

@@ -1,9 +1,10 @@
+using System;
+using System.Diagnostics;
+
 namespace Game.Windows.Modes
 {
     public class StreakMode : GameMode
     {
-        public override PlayerCapacity Capacity => PlayerCapacity.Multi;
-
         private const int BaseTimeout = 5;
         private int _timeoutTime;
 
@@ -14,11 +15,13 @@ namespace Game.Windows.Modes
 
         public override void OnRoundStart()
         {
+            Console.WriteLine("OnRoundStart");
             _timeoutTime = BaseTimeout;
         }
 
         public override void OnRoundEnd(RoundOutcome outcome)
         {
+            Console.WriteLine("OnRoundEnd({0})", outcome);
             switch (outcome)
             {
                 case RoundOutcome.CorrectGuess:
@@ -33,6 +36,7 @@ namespace Game.Windows.Modes
 
         protected override void OnGameEnd(GameOutcome outcome)
         {
+            Console.WriteLine("OnGameEnd({0})", outcome);
             if (outcome == GameOutcome.WordGuessed)
                 Score += 5;
             NextPlayer();

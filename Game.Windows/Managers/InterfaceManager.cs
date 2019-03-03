@@ -3,13 +3,13 @@ using System.Windows.Forms;
 using Game.Windows.Events;
 using Game.Windows.Interface;
 
-namespace Game.Windows
+namespace Game.Windows.Managers
 {
-    public class Manager : ApplicationContext
+    public class InterfaceManager : ApplicationContext
     {
         private int _formsCount;
 
-        public Manager()
+        public InterfaceManager()
         {
             var modeSelector = new Launcher();
             modeSelector.GameStart += OnGameStart;

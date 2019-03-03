@@ -19,20 +19,28 @@ namespace Game.Windows
         
         public Player[] Players { private get; set; }
 
-        protected Player Player => Players[_currentPlayer];
+        private Player Player => Players[_currentPlayer];
 
-        public abstract PlayerCapacity Capacity { get; }
         public virtual bool CanSurrender => false;
 
 
         public virtual void OnSecondElapsed() {}
         public virtual void OnRoundStart() {}
         public virtual void OnRoundEnd(RoundOutcome outcome) {}
-        public virtual void OnGameStart() {}
+
+        public virtual void OnGameStart()
+        {
+            Console.WriteLine("GM OnGameStart");
+            OnPlayerChange(Player);
+            OnRoundStart();
+            GameStarted?.Invoke(this, null);
+        }
+        
         protected virtual void OnGameEnd(GameOutcome outcome) {}
 
         protected void NextPlayer()
         {
+            Console.WriteLine("GM NextPlayer");
             ++_currentPlayer;
             _currentPlayer %= Players.Length;
             if (Players.Length > 1)
@@ -42,31 +50,33 @@ namespace Game.Windows
 
         protected void NextPlayer(RoundOutcome outcome)
         {
+            Console.WriteLine("GM NextPlayer({0})", outcome);
             OnRoundEnd(outcome);
             NextPlayer();
         }
 
         public void NextSong(GameOutcome outcome)
         {
+            Console.WriteLine("GM NextSong({0})", outcome);
             OnGameEnd(outcome);
             OnGameEnded(outcome);
         }
         
         protected virtual void OnPlayerChange(Player player)
         {
-            PlayerChange?.Invoke(this, new PlayerChangeEventArgs(player));
+            PlayerChanged?.Invoke(this, new PlayerChangeEventArgs(player));
         }
 
         /// <param name="time">In seconds</param>
-        protected virtual void OnRemainingTimeChange(int time)
+        protected virtual void OnRemainingTimeChanged(int time)
         {
-            RemainingTimeChange?.Invoke(this, new RemainingTimeEventArgs(time));
+            RemainingTimeChanged?.Invoke(this, new RemainingTimeEventArgs(time));
         }
         
         /// <param name="time">In milliseconds</param>
-        protected virtual void OnRemainingTimeChange(long time)
+        protected virtual void OnRemainingTimeChanged(long time)
         {
-            RemainingTimeChange?.Invoke(this, new RemainingTimeEventArgs((int) (time / 1000)));
+            RemainingTimeChanged?.Invoke(this, new RemainingTimeEventArgs((int) (time / 1000)));
         }
         
         protected virtual void OnScoreChanged(int score)
@@ -78,10 +88,11 @@ namespace Game.Windows
         {
             GameEnded?.Invoke(this, new GameEndedEventArgs(outcome));
         }
-
+        
         public event EventHandler<ScoreChangedEventArgs> ScoreChanged;
-        public event EventHandler<PlayerChangeEventArgs> PlayerChange;
-        public event EventHandler<RemainingTimeEventArgs> RemainingTimeChange;
+        public event EventHandler<PlayerChangeEventArgs> PlayerChanged;
+        public event EventHandler<RemainingTimeEventArgs> RemainingTimeChanged;
+        public event EventHandler GameStarted;
         public event EventHandler<GameEndedEventArgs> GameEnded;
     }
 }

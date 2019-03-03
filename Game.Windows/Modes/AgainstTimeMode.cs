@@ -1,12 +1,9 @@
 using System;
-using Game.Windows.Events;
 
 namespace Game.Windows.Modes
 {
     public class AgainstTimeMode : GameMode
     {
-        public override PlayerCapacity Capacity => PlayerCapacity.SoloMulti;
-
         private const int StartTime = 10;
         private long _remainingTime;
         
@@ -17,12 +14,13 @@ namespace Game.Windows.Modes
             {
                 if (_remainingTime == value) return;
                 _remainingTime = value; 
-                OnRemainingTimeChange(value);
+                OnRemainingTimeChanged(value);
             }
         }
 
         public override void OnSecondElapsed()
         {
+            Console.WriteLine("ATM OnSecondElapsed");
             RemainingTime -= 1000;
             if (RemainingTime < 0)
                 NextSong(GameOutcome.WrongWord);
@@ -30,11 +28,13 @@ namespace Game.Windows.Modes
 
         public override void OnRoundStart()
         {
+            Console.WriteLine("ATM OnRoundStart");
             RemainingTime = StartTime * 1000;
         }
         
         public override void OnRoundEnd(RoundOutcome outcome)
         {
+            Console.WriteLine("ATM OnRoundEnd");
             switch (outcome)
             {
                 case RoundOutcome.CorrectGuess:
@@ -51,8 +51,11 @@ namespace Game.Windows.Modes
         
         protected override void OnGameEnd(GameOutcome outcome)
         {
-            Score += 10;
-            NextSong(GameOutcome.WordGuessed);
+            Console.WriteLine("ATM OnGameEnd");
+            if (outcome == GameOutcome.WordGuessed)
+                Score += 10;
+            else
+                Score -= 30;
         }
     }
 }

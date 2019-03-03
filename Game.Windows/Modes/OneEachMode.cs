@@ -2,7 +2,6 @@ namespace Game.Windows.Modes
 {
     public class OneEachMode : GameMode
     {
-        public override PlayerCapacity Capacity => PlayerCapacity.Multi;
         public override bool CanSurrender => true;
         
         public override void OnSecondElapsed()
@@ -13,7 +12,7 @@ namespace Game.Windows.Modes
 
         public override void OnRoundStart()
         {
-            Score = 100;
+            Score += 100;
         }
 
         protected override void OnGameEnd(GameOutcome outcome)

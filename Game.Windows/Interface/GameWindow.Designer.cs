@@ -31,26 +31,18 @@ namespace Game.Windows.Interface
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblPlayer = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblTime = new Game.Windows.Interface.AdjustingLabel();
             this.lblScore = new Game.Windows.Interface.AdjustingLabel();
-            this.keyboard1 = new Game.Windows.Interface.Keyboard();
+            this.keyboard = new Game.Windows.Interface.Keyboard();
             this.guessField = new Game.Windows.Interface.GuessField();
             this.roundChange = new Game.Windows.Interface.RoundChange();
             this.audioPlayer = new Game.Windows.AudioPlayer(this.components);
+            this.musicManager = new Game.Windows.Managers.MusicManager(this.components);
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(657, 415);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(131, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Passa il turno";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -102,18 +94,19 @@ namespace Game.Windows.Interface
             this.lblScore.Text = "100";
             this.lblScore.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // keyboard1
+            // keyboard
             // 
-            this.keyboard1.DisabledKeyColor = System.Drawing.Color.DimGray;
-            this.keyboard1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.keyboard1.ForeColor = System.Drawing.Color.DarkGray;
-            this.keyboard1.KeyColor = System.Drawing.Color.Gainsboro;
-            this.keyboard1.Location = new System.Drawing.Point(97, 235);
-            this.keyboard1.Name = "keyboard1";
-            this.keyboard1.Size = new System.Drawing.Size(597, 182);
-            this.keyboard1.TabIndex = 1;
-            this.keyboard1.Text = "keyboard1";
-            this.keyboard1.KeyPressed += new System.EventHandler<Game.Windows.Events.KeyboardEventArgs>(this.OnKeyPressed);
+            this.keyboard.DisabledKeyColor = System.Drawing.Color.DimGray;
+            this.keyboard.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.keyboard.ForeColor = System.Drawing.Color.DarkGray;
+            this.keyboard.HoverKeyColor = System.Drawing.Color.Empty;
+            this.keyboard.KeyColor = System.Drawing.Color.Gainsboro;
+            this.keyboard.Location = new System.Drawing.Point(97, 235);
+            this.keyboard.Name = "keyboard";
+            this.keyboard.Size = new System.Drawing.Size(597, 182);
+            this.keyboard.TabIndex = 1;
+            this.keyboard.Text = "keyboard";
+            this.keyboard.KeyPressed += new System.EventHandler<Game.Windows.Events.KeyboardEventArgs>(this.OnKeyPressed);
             // 
             // guessField
             // 
@@ -134,20 +127,34 @@ namespace Game.Windows.Interface
             this.roundChange.TabIndex = 7;
             this.roundChange.Visible = false;
             // 
+            // audioPlayer
+            // 
+            this.audioPlayer.Volume = 1F;
+            this.audioPlayer.SourceEnded += new System.EventHandler(this.OnSourceEnded);
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(0, 443);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(800, 10);
+            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar.TabIndex = 8;
+            // 
             // GameWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.lblPlayer);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.lblScore);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.keyboard1);
+            this.Controls.Add(this.keyboard);
             this.Controls.Add(this.guessField);
             this.Controls.Add(this.roundChange);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "GameWindow";
             this.ShowIcon = false;
@@ -161,8 +168,7 @@ namespace Game.Windows.Interface
         #endregion
 
         private GuessField guessField;
-        private Keyboard keyboard1;
-        private System.Windows.Forms.Button button1;
+        private Keyboard keyboard;
         private AdjustingLabel lblScore;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblPlayer;
@@ -170,6 +176,8 @@ namespace Game.Windows.Interface
         private AdjustingLabel lblTime;
         private System.Windows.Forms.Label label2;
         private AudioPlayer audioPlayer;
+        private Managers.MusicManager musicManager;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }
 

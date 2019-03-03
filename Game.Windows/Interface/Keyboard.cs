@@ -6,7 +6,7 @@ using Game.Windows.Events;
 
 namespace Game.Windows.Interface
 {
-    public class Keyboard : Control
+    public sealed class Keyboard : Control
     {
         private const int FirstLineKeys = 10;
         private const int SecondLineKeys = 9;
@@ -25,11 +25,15 @@ namespace Game.Windows.Interface
         };
 
         private Color _backgroundEnabled;
+        private Color _backgroundHover;
         private Color _backgroundDisabled;
+
+        private PointF _mousePos;
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var enabled = new SolidBrush(_backgroundEnabled);
+            var hover = new SolidBrush(_backgroundHover);
             var disabled = new SolidBrush(_backgroundDisabled);
             var text = new SolidBrush(ForeColor);
 
@@ -43,6 +47,8 @@ namespace Game.Windows.Interface
             {
                 var rect = new RectangleF(x, y, cellSize, cellSize);
                 g.FillRectangle(_state[i] == ButtonState.Enabled ? enabled : disabled, rect);
+                if (rect.Contains(_mousePos))
+                    g.FillRectangle(hover, rect);
                 _buttons[i] = rect;
 
                 var str = _keys[i].ToString();
@@ -85,9 +91,29 @@ namespace Game.Windows.Interface
             }
         }
 
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            _mousePos = new PointF(e.X, e.Y);
+            Invalidate();
+        }
+
+        private void SetKeysState(ButtonState state)
+        {
+            for (int i = 0; i < _state.Length; i++)
+                _state[i] = state;
+        }
+
+        public void Reset()
+        {
+            SetKeysState(ButtonState.Enabled);
+            Invalidate();
+        }
+
+        protected override bool DoubleBuffered => true;
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            KeyPressed?.Invoke(this, new KeyboardEventArgs((char) (e.KeyCode - Keys.A)));
+            OnKeyPressed((char) (e.KeyCode - Keys.A));
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -95,10 +121,21 @@ namespace Game.Windows.Interface
             for (int i = 0; i < KeyCount; i++)
             {
                 if (_buttons[i].Contains(e.X, e.Y) && _state[i] == ButtonState.Enabled)
+                {
+                    _state[i] = ButtonState.Disabled;
                     KeyPressed?.Invoke(this, new KeyboardEventArgs(_keys[i]));
+                }
             }
         }
 
+        private void OnKeyPressed(char key)
+        {
+            for (int i = 0; i < KeyCount; i++)
+                if (_keys[i] == key)
+                    _state[i] = ButtonState.Disabled;
+            KeyPressed?.Invoke(this, new KeyboardEventArgs(key));
+        }
+        
         [Browsable(true)]
         public event EventHandler<KeyboardEventArgs> KeyPressed;
 
@@ -109,6 +146,17 @@ namespace Game.Windows.Interface
             set
             {
                 _backgroundEnabled = value;
+                Invalidate();
+            }
+        }
+
+        [Browsable(true)]
+        public Color HoverKeyColor
+        {
+            get => _backgroundHover;
+            set
+            {
+                _backgroundHover = value;
                 Invalidate();
             }
         }
@@ -126,8 +174,8 @@ namespace Game.Windows.Interface
 
         private enum ButtonState
         {
-            Enabled,
-            Disabled
+            Disabled,
+            Enabled
         }
     }
 }

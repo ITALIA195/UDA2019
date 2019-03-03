@@ -1,13 +1,9 @@
-using System.Web.UI.Design.WebControls;
-
 namespace Game.Windows.Modes
 {
     public class NormalMode : GameMode
     {
-        public override PlayerCapacity Capacity => PlayerCapacity.SoloMulti;
-
         private const int TimeoutTime = 5;
-        private long _remainingTime = TimeoutTime * 1000;
+        private long _remainingTime;
 
         private long RemainingTime
         {
@@ -16,7 +12,7 @@ namespace Game.Windows.Modes
             {
                 if (_remainingTime == value) return;
                 _remainingTime = value;
-                OnRemainingTimeChange(value);
+                OnRemainingTimeChanged(value);
             }
         }
 
@@ -24,7 +20,7 @@ namespace Game.Windows.Modes
         {
             RemainingTime -= 1000;
             if (RemainingTime < 0)
-                NextPlayer(RoundOutcome.Timeout);
+                OnRoundEnd(RoundOutcome.Timeout);
         }
 
         public override void OnRoundStart()
@@ -65,7 +61,6 @@ namespace Game.Windows.Modes
                     Score -= 10;
                     break;
             }
-            NextPlayer();
         }
     }
 }

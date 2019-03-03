@@ -40,6 +40,10 @@
       <HintPath>..\packages\JetBrains.Annotations.2018.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SharpCompress, Version=0.22.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.22.0\lib\net45\SharpCompress.dll</HintPath>
     </Reference>
@@ -68,12 +72,6 @@
     <Compile Include="Events\KeyboardEventArgs.cs" />
     <Compile Include="Events\GameStartArgs.cs" />
     <Compile Include="Events\ScoreChangedEventArgs.cs" />
-    <Compile Include="Interface\GameSummary.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Interface\GameSummary.Designer.cs">
-      <DependentUpon>GameSummary.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\GameWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -87,13 +85,18 @@
     <Compile Include="Interface\Launcher.Designer.cs">
       <DependentUpon>Launcher.cs</DependentUpon>
     </Compile>
-    <Compile Include="Manager.cs" />
+    <Compile Include="IO\ArchiveReader.cs" />
+    <Compile Include="IO\Serialization\SongInfo.cs" />
+    <Compile Include="Managers\InterfaceManager.cs" />
+    <Compile Include="Managers\MusicManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Outcome.cs" />
     <Compile Include="Mode.cs" />
     <Compile Include="Interface\GuessField.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Interface\Keyword.cs">
+    <Compile Include="Interface\Keyboard.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Modes\AgainstTimeMode.cs" />
@@ -106,17 +109,19 @@
     <Compile Include="Interface\AdjustingLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Song.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Interface\RoundChange.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Interface\GameSummary.resx">
-      <DependentUpon>GameSummary.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Interface\GameWindow.resx">
       <DependentUpon>GameWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\Keyword.resx">
+      <DependentUpon>Keyboard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\Launcher.resx">
       <DependentUpon>Launcher.cs</DependentUpon>

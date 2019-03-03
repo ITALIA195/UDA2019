@@ -1,3 +1,5 @@
+using System;
+
 namespace Game.Windows
 {
     public class Player
@@ -16,7 +18,11 @@ namespace Game.Windows
         public int Score
         {
             get => _score;
-            set => _score = value;
+            set
+            {
+                Console.WriteLine("{0} Score: {1}", _name, value);
+                _score = value;
+            }
         }
     }
 }

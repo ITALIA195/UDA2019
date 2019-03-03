@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Windows.Forms;
-using CSCore.CoreAudioAPI;
 using Game.Windows.Events;
-using Game.Windows.Modes;
 
 namespace Game.Windows.Interface
 {
@@ -15,15 +12,15 @@ namespace Game.Windows.Interface
         public GameWindow(GameMode mode)
         {
             InitializeComponent();
-            
+
             _gameMode = mode;
-            _gameMode.PlayerChange += OnPlayerChange;
-            _gameMode.RemainingTimeChange += OnRemainingTimeChanged;
+            _gameMode.PlayerChanged += OnPlayerChanged;
+            _gameMode.RemainingTimeChanged += OnRemainingTimeChanged;
             _gameMode.ScoreChanged += OnScoreChanged;
+            _gameMode.GameStarted += OnGameStarted;
             _gameMode.GameEnded += OnGameEnded;
-            _gameMode.OnRoundStart();
+            _gameMode.OnGameStart();
             StartTimer();
-            StartGame();
         }
 
         private void OnScoreChanged(object sender, ScoreChangedEventArgs e)
@@ -36,8 +33,11 @@ namespace Game.Windows.Interface
             lblTime.Text = e.Time.ToString(CultureInfo.InvariantCulture);
         }
 
-        private void OnPlayerChange(object sender, PlayerChangeEventArgs e)
+        private void OnPlayerChanged(object sender, PlayerChangeEventArgs e)
         {
+            Console.WriteLine("GW OnPlayerChanged");
+            lblScore.Text = e.Player.Score.ToString(CultureInfo.InvariantCulture);
+            lblPlayer.Text = e.Player.Name;
             roundChange.Show(e.Player.Name);
         }
 
@@ -49,42 +49,33 @@ namespace Game.Windows.Interface
             timer.Start();
         }
 
-        private void StartGame()
+        private void OnGameStarted(object sender, EventArgs e)
         {
-            _stream = File.OpenRead(_songs[_rand.Next(_songs.Length)]);
-            audioPlayer.Play(_stream);
+            Console.WriteLine("GW OnGameStarted");
+            keyboard.Reset();
             
+            Song song = musicManager.Next;
+            Console.WriteLine("Next song: {0}", song.Name);
+            guessField.Word = song.Name;
+            audioPlayer.Play(song);
+        }
+
+        private void OnGameEnded(object sender, GameEndedEventArgs e)
+        {
+            Console.WriteLine("GW OnGameEnded");
             _gameMode.OnGameStart();
-            _gameMode.OnRoundStart();
         }
 
         private void OnTick(object sender, EventArgs e)
         {
+            progressBar.Value = (int) (audioPlayer.Progress * 100);
             if (!roundChange.RoundChanging)
                 _gameMode.OnSecondElapsed();
         }
 
-        private readonly Random _rand = new Random();
-        
-        private string[] _songs = {
-            @"D:\Songs\Mine.mp3",
-            @"D:\Songs\Airplanes.mp3",
-            @"D:\Songs\Dont Leave Me Alone.mp3",
-            @"D:\Songs\Fearless.mp3",
-            @"D:\Songs\Diamond Heart.mp3"
-        };
-        
-        private Stream _stream;
-        private void OnGameEnded(object sender, GameEndedEventArgs e)
-        {
-//            audioPlayer.Stop();
-            _stream?.Dispose();
-            _stream = File.OpenRead(_songs[_rand.Next(_songs.Length)]);
-            audioPlayer.Play(_stream);
-        }
-
         private void OnKeyPressed(object sender, KeyboardEventArgs e)
         {
+            Console.WriteLine("GW OnKeyPress({0})", e.Key);
             RoundOutcome outcome;
             if (guessField.Guess(e.Key))
                 outcome = RoundOutcome.CorrectGuess;
@@ -92,11 +83,20 @@ namespace Game.Windows.Interface
                 outcome = RoundOutcome.WrongGuess;
 
             _gameMode.OnRoundEnd(outcome);
+            guessField.CheckIfGuessed();
         }
 
         private void OnWordGuessed(object sender, EventArgs e)
         {
+            Console.WriteLine("GW OnWordGuessed");
             _gameMode.NextSong(GameOutcome.WordGuessed);
+        }
+
+        private void OnSourceEnded(object sender, EventArgs e)
+        {
+            Console.WriteLine("GW OnSourceEnded");
+            musicManager.Song.Dispose();
+            _gameMode.NextSong(GameOutcome.WrongWord);
         }
     }
 }
