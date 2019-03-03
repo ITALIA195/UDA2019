@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Configuration;
+using System.Windows.Forms;
 using CSCore.MediaFoundation;
 using Game.Windows.IO.Serialization;
 using Newtonsoft.Json;
@@ -20,6 +21,11 @@ namespace Game.Windows.IO
         
         public ArchiveReader(string path)
         {
+            if (!File.Exists(path))
+            {
+                MessageBox.Show($"File '{path}' not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
             _archive = ZipArchive.Open(path);
             foreach (var entry in _archive.Entries)
                 _entries.Add(entry.Key, entry);
