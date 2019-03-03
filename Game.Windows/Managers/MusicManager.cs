@@ -17,7 +17,7 @@ namespace Game.Windows.Managers
         {
             if (LicenseManager.UsageMode == LicenseUsageMode.Runtime)
             {
-                _archive = new ArchiveReader(@"D:\Songs\Game\Game.zip");
+                _archive = new ArchiveReader(@"songs");
                 _songs = _archive.GetSongs();
                 _songs.Shuffle();
             }
